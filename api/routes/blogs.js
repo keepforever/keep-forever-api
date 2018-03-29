@@ -12,8 +12,15 @@ router.get('/', (req, res, next) => {
 });
 
 router.post('/', (req, res, next) => {
+  const newBlog = {
+    _id: Math.random().toFixed(8) * 1000,
+    title: req.body.title,
+    date: new Date(),
+    body: req.body.body
+  }
   res.status(200).json({
-    message: 'Handling POST requests to /blogs'
+    message: 'Handling POST requests to /blogs',
+    blog: newBlog
   });
 });
 
