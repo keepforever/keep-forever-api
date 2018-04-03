@@ -4,6 +4,7 @@ const morgan = require('morgan')
 // Dependency to parse body of incoming requests
 const bodyParser = require('body-parser');
 const blogRoutes = require('./api/routes/blogs');
+const songRoutes = require('./api/routes/songs');
 const mongoose = require('mongoose');
 
 mongoose.connect(
@@ -44,6 +45,7 @@ app.use((req, res, next) =>  {
 // '/blogs' is a filter: "only requests beginning with '/blogs' proceed..."
 // app.use(filter, path to use if passes filter);
 app.use('/blogs', blogRoutes);
+app.use('/songs', songRoutes);
 
 // handles and unknow requests and forward downstream
 // to next middleware

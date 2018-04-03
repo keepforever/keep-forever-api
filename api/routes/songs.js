@@ -1,28 +1,28 @@
 const express = require('express');
 const router = express.Router();
-const Blog = require('../models/blog');
+const Song = require('../models/song');
 const mongoose = require('mongoose');
 
 // .get(url, handler ).  just "/" because any request that reaches this file
-// will already have a '/blogs' in the url.
+// will already have a '/songs' in the url.
 // We are, in effect, decorating the instantilized "router" const above.
 
 router.get('/', (req, res, next) => {
-  Blog.find()
-    .select("title body _id dateCreated")
+  Song.find()
+    .select("title artist dateCreated _id")
     .exec()
     .then(docs => {
       const response = {
         count: docs.length,
-        blogs: docs.map(doc => {
+        songs: docs.map(doc => {
           return {
             title: doc.title,
             dateCreated: doc.dateCreated,
-            body: doc.body,
+            artist: doc.artist,
             _id: doc._id,
             request: {
               type: "GET",
-              url: "http://localhost:4000/blogs/" + doc._id
+              url: "http://localhost:4000/songs/" + doc._id
             }
           };
         })
@@ -36,29 +36,28 @@ router.get('/', (req, res, next) => {
       });
     });
 });
-
-// POST single Blog
+// POST single song title and artist
 router.post('/', (req, res, next) => {
-  const blog = new Blog({
+  const song = new Song({
     _id: new mongoose.Types.ObjectId(),
     title: req.body.title,
-    dateCreated: new Date(),
-    body: req.body.body
+    date: new Date(),
+    artist: req.body.artist
   });
-  blog
+  song
     .save()
     .then(result => {
       console.log(result);
       res.status(201).json({
-        message: "Created blog sucessfully",
-        createdBlog: {
+        message: "Added Song sucessfully",
+        createdSong: {
           _id: result._id,
           title: result.title,
           dateCreated: result.dateCreated,
-          body: result.body,
+          artist: result.artist,
           request: {
             type: "GET",
-            url: "http://localhost:4000/blogs/" + result._id
+            url: "http://localhost:4000/songs/" + result._id
           }
         }
       });
@@ -71,20 +70,20 @@ router.post('/', (req, res, next) => {
     });
 });
 
-//route for individual blog. Using :id variable to refrence specific blog
-router.get('/:blogId', (req, res, next) => {
-  const id = req.params.blogId;
-  Blog.findById(id)
-    .select("title body _id dateCreated")
+//route for individual song. Using :id variable to refrence specific song
+router.get('/:songId', (req, res, next) => {
+  const id = req.params.songId;
+  Song.findById(id)
+    .select("title artist _id dateCreated")
     .exec()
     .then(doc => {
       console.log("From database", doc);
       if (doc) {
         res.status(200).json({
-          blog: doc,
+          song: doc,
           request: {
             type: "GET",
-            url: "http://localhost:4000/blogs"
+            url: "http://localhost:4000/songs"
           }
         });
       } else {
@@ -99,17 +98,18 @@ router.get('/:blogId', (req, res, next) => {
     });
 });
 
-router.patch('/:blogId', (req, res, next) => {
+router.patch('/:songId', (req, res, next) => {
   // extract id from req via params property
   res.status(200).json({
-    message: 'you sent a PATCH request, UPDATED BLOG'
+    message: 'Congrats, you sent a PATCH request to upadate a song!'
   });
 });
 
-router.delete('/:blogId', (req, res, next) => {
+
+router.delete('/:songId', (req, res, next) => {
   // extract id from req via params property
   res.status(200).json({
-    message: 'you sent a DELETE request'
+    message: 'Congrats, you sent a DELETE request!'
   });
 });
 
